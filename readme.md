@@ -28,7 +28,7 @@ Des binaires pré-compilés pour Linux, macOS et Windows sont disponibles dans l
 ```bash
 git clone [https://github.com/votre-utilisateur/deepl-cli.git](https://github.com/votre-utilisateur/deepl-cli.git)
 cd deepl-cli
-go build -o deepl main.go
+go build -o deepl ./cmd/deepl
 # Déplacez l'exécutable vers un répertoire de votre PATH
 # mv deepl /usr/local/bin/deepl
 ⚙️ Configuration
