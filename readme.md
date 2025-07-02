@@ -1,3 +1,5 @@
+![Release Workflow](https://github.com/Jsamson33/deepl-cli/workflows/Release/badge.svg) ![Go Version](https://img.shields.io/badge/Go-1.22-blue.svg) ![GitHub Pages](https://github.com/Jsamson33/deepl-cli/workflows/pages%20build%20and%20deployment/badge.svg) ![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg) ![Linter](https://img.shields.io/badge/linter-passing-brightgreen.svg)
+
 # 🌍 deepl-cli: Your DeepL Command-Line Translator
 
 `deepl-cli` is a lightweight and powerful command-line tool written in Go, designed to give you access to DeepL's exceptional translation quality directly from your terminal. Quickly translate text without leaving your working environment!
