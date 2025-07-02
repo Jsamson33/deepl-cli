@@ -11,7 +11,7 @@ The project's architecture is designed to be modular and easy to maintain, separ
 ```mermaid
 graph TD
     A[User] -->|Executes deepl command| B(CLI - cmd/deepl/main.go)
-    B -->|Parses arguments (cobra)| C{Root Command - cmd/deepl/cmd/root.go}
+    B -->|Parses arguments (cobra)| C{Root Command - cmd/deepl/cmd/root.go}and - cmd/deepl/cmd/root.go}
     C -->|Loads configuration| D[Configuration - internal/config/config.go]
     C -->|Prioritizes arguments over config|
     C -->|Calls DeepL API| E(DeepL API)
