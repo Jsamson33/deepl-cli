@@ -31,11 +31,11 @@ func Load() (*Config, error) {
 	}
 
 	if cfg.APIKey == "" {
-		return nil, errors.New("api_key not found in config file")
+		return nil, errors.New("API key not found in config file")
 	}
 
 	if cfg.TargetLang == "" {
-		return nil, errors.New("target_lang not found in config file")
+		return nil, errors.New("target language not found in config file")
 	}
 
 	return &cfg, nil

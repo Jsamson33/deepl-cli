@@ -1,58 +1,81 @@
-# 🌍 deepl-cli : Votre Traducteur DeepL en Ligne de Commande
+# 🌍 deepl-cli: Your DeepL Command-Line Translator
 
-`deepl-cli` est un outil en ligne de commande léger et puissant écrit en Go, conçu pour vous permettre d'accéder à la qualité de traduction exceptionnelle de DeepL directement depuis votre terminal. Traduisez rapidement du texte sans quitter votre environnement de travail !
+`deepl-cli` is a lightweight and powerful command-line tool written in Go, designed to give you access to DeepL's exceptional translation quality directly from your terminal. Quickly translate text without leaving your working environment!
 
-## ✨ Fonctionnalités
+## ✨ Features
 
-* Traduction rapide de texte via l'API DeepL.
-* Détection automatique de la langue source.
-* Configuration facile de votre clé API et des langues par défaut via un fichier `~/.deepl/.deepl.toml`.
-* Support des langues source et cible directement en ligne de commande.
+*   Fast text translation via the DeepL API.
+*   Automatic source language detection.
+*   Easy configuration of your API key and default languages via a `~/.deepl/.deepl.toml` file.
+*   Support for source and target languages directly from the command line.
 
 ## 🚀 Installation
 
-### Pré-requis
+### Prerequisites
 
-* Une clé API DeepL. Vous pouvez en obtenir une en vous inscrivant au [plan DeepL API Free](https://www.deepl.com/pro/developer).
-* Go 1.16+ installé sur votre machine.
+*   A DeepL API key. You can obtain one by signing up for the [DeepL API Free plan](https://www.deepl.com/pro/developer).
+*   Go 1.16+ installed on your machine.
 
-### Depuis les Binaires Pré-compilés (Recommandé)
+### From Pre-compiled Binaries (Recommended)
 
-Des binaires pré-compilés pour Linux, macOS et Windows sont disponibles dans la section [Releases de ce dépôt GitHub](https://github.com/votre-utilisateur/deepl-cli/releases).
-1.  Téléchargez l'archive correspondant à votre système d'exploitation et architecture.
-2.  Décompressez l'archive.
-3.  Placez l'exécutable `deepl` (ou `deepl.exe` sur Windows) dans un répertoire présent dans votre `PATH` (par exemple, `/usr/local/bin` sur Linux/macOS, ou un dossier personnalisé ajouté à votre `PATH` sur Windows).
+Pre-compiled binaries for Linux, macOS, and Windows are available in the [Releases section of this GitHub repository](https://github.com/votre-utilisateur/deepl-cli/releases).
+1.  Download the archive corresponding to your operating system and architecture.
+2.  Unzip the archive.
+3.  Place the `deepl` executable (or `deepl.exe` on Windows) in a directory present in your `PATH` (e.g., `/usr/local/bin` on Linux/macOS, or a custom folder added to your `PATH` on Windows).
 
-### Depuis les Sources
+### From Source
 
 ```bash
 git clone [https://github.com/votre-utilisateur/deepl-cli.git](https://github.com/votre-utilisateur/deepl-cli.git)
 cd deepl-cli
 go build -o deepl ./cmd/deepl
-# Déplacez l'exécutable vers un répertoire de votre PATH
+# Move the executable to a directory in your PATH
 # mv deepl /usr/local/bin/deepl
-⚙️ Configuration
-Avant d'utiliser deepl-cli, vous devez configurer votre clé API DeepL et éventuellement vos langues par défaut.
+```
 
-Créez un répertoire .deepl dans votre répertoire personnel :
+## ⚙️ Configuration
+
+Before using deepl-cli, you need to configure your DeepL API key and optionally your default languages.
+
+Create a `.deepl` directory in your home directory:
+
+```bash
 mkdir -p ~/.deepl
-Créez un fichier nommé .deepl.toml à l'intérieur de ce répertoire (~/.deepl/.deepl.toml) avec le contenu suivant, en remplaçant VOTRE_CLE_API_DEEPL par votre véritable clé :
-api_key = "VOTRE_CLE_API_DEEPL"
-target_lang = "fr" # Langue cible par défaut (ex: "fr" pour Français, "en" pour Anglais)
-# source_lang = "en" # Optionnel : langue source par défaut (peut être auto-détectée)
-Note sur les langues : Utilisez les codes ISO 639-1 (par exemple en, fr, de). Pour une liste complète, consultez la documentation de l'API DeepL.
+```
 
-💻 Utilisation
-Traduire du texte (langues par défaut)
+Create a file named `.deepl.toml` inside this directory (`~/.deepl/.deepl.toml`) with the following content, replacing `YOUR_DEEPL_API_KEY` with your actual key:
+
+```toml
+api_key = "YOUR_DEEPL_API_KEY"
+target_lang = "en" # Default target language (e.g., "en" for English, "fr" for French)
+# source_lang = "fr" # Optional: default source language (can be auto-detected)
+```
+
+**Note on languages:** Use ISO 639-1 codes (e.g., `en`, `fr`, `de`). For a complete list, consult the DeepL API documentation.
+
+## 💻 Usage
+
+### Translate text (default languages)
+
+```bash
 deepl "Hello world, how are you?"
-Le texte sera traduit vers la target_lang configurée dans votre fichier .deepl.toml. La langue source sera détectée automatiquement.
+```
 
-Spécifier les langues source et cible
-Utilisez les drapeaux -s (source) et -t (target) :
+The text will be translated to the `target_lang` configured in your `.deepl.toml` file. The source language will be automatically detected.
 
+### Specify source and target languages
+
+Use the `-s` (source) and `-t` (target) flags:
+
+```bash
 deepl -s en -t fr "Hello world, how are you?"
 deepl -s fr -t en "Bonjour le monde, comment allez-vous ?"
-Aide
-Pour voir toutes les options disponibles :
+```
 
+### Help
+
+To see all available options:
+
+```bash
 deepl --help
+```

@@ -1,85 +1,84 @@
-# Requirements pour l'outil de traduction Deepl CLI
+# Requirements for the DeepL CLI Translation Tool
 
-Ce document décrit les exigences fonctionnelles et techniques pour le développement d'un outil de traduction en ligne de commande nommé `deepl`, utilisant l'API de DeepL.
+This document describes the functional and technical requirements for the development of a command-line translation tool named `deepl`, using the DeepL API.
 
-## 1. Description du projet
+## 1. Project Description
 
-L'objectif est de créer un utilitaire en ligne de commande simple et efficace qui permet aux utilisateurs de traduire du texte en utilisant l'API DeepL. L'outil sera configurable et facile à utiliser pour des traductions rapides depuis le terminal.
+The goal is to create a simple and efficient command-line utility that allows users to translate text using the DeepL API. The tool will be configurable and easy to use for quick translations from the terminal.
 
-## 2. Fonctionnalités
+## 2. Features
 
-### 2.1 Fonctionnalités principales
+### 2.1 Core Features
 
-* **Traduction de texte :** Traduire un morceau de texte fourni en argument.
-* **Détection automatique de la langue source :** Si la langue source n'est pas spécifiée, l'outil tentera de la détecter automatiquement.
-* **Configuration flexible :** La clé API DeepL ainsi que les langues source et cible par défaut devront être configurées via un fichier de configuration dédié.
-* **Affichage du résultat :** Le texte traduit sera affiché directement dans le terminal.
+*   **Text Translation:** Translate a piece of text provided as an argument.
+*   **Automatic Source Language Detection:** If the source language is not specified, the tool will attempt to detect it automatically.
+*   **Flexible Configuration:** The DeepL API key, as well as default source and target languages, must be configurable via a dedicated configuration file.
+*   **Result Display:** The translated text will be displayed directly in the terminal.
 
-### 2.2 Fonctionnalités optionnelles (pour les futures versions)
+### 2.2 Optional Features (for future versions)
 
-* **Traduction de fichiers :** Possibilité de traduire le contenu d'un fichier et d'écrire la traduction dans un nouveau fichier.
-* **Support des glossaires :** Utilisation des glossaires DeepL pour des traductions spécifiques.
-* **Mode interactif :** Un mode où l'utilisateur peut taper du texte ligne par ligne pour la traduction.
-* **Affichage des langues supportées :** Une commande pour lister toutes les langues supportées par DeepL.
+*   **File Translation:** Ability to translate the content of a file and write the translation to a new file.
+*   **Glossary Support:** Use DeepL glossaries for specific translations.
+*   **Interactive Mode:** A mode where the user can type text line by line for translation.
+*   **Display Supported Languages:** A command to list all languages supported by DeepL.
 
-## 3. Spécifications techniques
+## 3. Technical Specifications
 
-### 3.1 Langage de développement
+### 3.1 Development Language
 
-* Le projet sera entièrement codé en **Go (Golang)**.
+*   The project will be entirely coded in **Go (Golang)**.
 
-### 3.2 Utilisation en ligne de commande
+### 3.2 Command-Line Usage
 
-* L'exécutable final devra être utilisable via la commande `deepl`.
-* Exemples d'utilisation :
-    * `deepl "Bonjour le monde"` (traduit en langue cible par défaut)
-    * `deepl -s fr -t en "Bonjour le monde"` (traduit du français vers l'anglais)
+*   The final executable must be usable via the `deepl` command.
+*   Usage examples:
+    *   `deepl "Hello world"` (translates to default target language)
+    *   `deepl -s fr -t en "Bonjour le monde"` (translates from French to English)
 
-### 3.3 Fichier de configuration
+### 3.3 Configuration File
 
-* Un fichier de configuration nommé `.deepl.toml` (ou un autre format comme YAML/JSON si préféré, mais TOML est courant pour Go) sera créé dans le répertoire `~/.deepl/` (ou `$HOME/.deepl/` sur Linux/macOS, `%USERPROFILE%\.deepl\` sur Windows).
-* Ce fichier contiendra au minimum :
-    * `api_key`: La clé API DeepL.
-    * `source_lang`: La langue source par défaut (optionnel, peut être auto-détectée).
-    * `target_lang`: La langue cible par défaut (obligatoire).
+*   A configuration file named `.deepl.toml` (or another format like YAML/JSON if preferred, but TOML is common for Go) will be created in the `~/.deepl/` directory (or `$HOME/.deepl/` on Linux/macOS, `%USERPROFILE%\.deepl\` on Windows).
+*   This file will contain at minimum:
+    *   `api_key`: The DeepL API key.
+    *   `source_lang`: The default source language (optional, can be auto-detected).
+    *   `target_lang`: The default target language (mandatory).
 
-### 3.4 API DeepL
+### 3.4 DeepL API
 
-* Utilisation de l'API REST de DeepL. Une bibliothèque Go pour l'API DeepL pourrait être utilisée si disponible et maintenue, sinon des requêtes HTTP directes devront être implémentées.
-* Le plan DeepL API Free sera utilisé pour le développement et les tests.
+*   Use of the DeepL REST API. A Go library for the DeepL API could be used if available and maintained, otherwise direct HTTP requests will need to be implemented.
+*   The DeepL API Free plan will be used for development and testing.
 
-## 4. Étapes de réalisation
+## 4. Implementation Steps
 
-### 4.1 Phase 1 : Initialisation et Configuration
+### 4.1 Phase 1: Initialization and Configuration
 
-1.  **Initialisation du projet Go :** Créer un nouveau module Go.
-2.  **Structure des répertoires :** Mettre en place la structure de base du projet (voir section 7).
-3.  **Gestion de la configuration :**
-    * Implémenter la logique pour lire le fichier `~/.deepl/.deepl.toml`.
-    * Gérer les erreurs si le fichier ou la clé API est manquante.
-    * Utiliser une bibliothèque de parsing de configuration (ex: `viper`, `gopkg.in/toml.v2`).
+1.  **Go Project Initialization:** Create a new Go module.
+2.  **Directory Structure:** Set up the basic project structure (see section 7).
+3.  **Configuration Management:**
+    *   Implement logic to read the `~/.deepl/.deepl.toml` file.
+    *   Handle errors if the file or API key is missing.
+    *   Use a configuration parsing library (e.g., `viper`, `gopkg.in/toml.v2`).
 
-### 4.2 Phase 2 : Logique de Traduction
+### 4.2 Phase 2: Translation Logic
 
-1.  **Parsing des arguments CLI :**
-    * Utiliser une bibliothèque comme `cobra` ou `flag` pour gérer les arguments de la ligne de commande (`-s`, `-t`, texte à traduire).
-    * Prioriser les arguments CLI sur les valeurs par défaut du fichier de configuration.
-2.  **Appel à l'API DeepL :**
-    * Implémenter la logique pour construire la requête HTTP vers l'API DeepL.
-    * Gérer les réponses de l'API (succès, erreurs, codes HTTP).
-    * Afficher la traduction ou les messages d'erreur de manière claire.
+1.  **CLI Argument Parsing:**
+    *   Use a library like `cobra` or `flag` to manage command-line arguments (`-s`, `-t`, text to translate).
+    *   Prioritize CLI arguments over default values from the configuration file.
+2.  **DeepL API Call:**
+    *   Implement logic to construct the HTTP request to the DeepL API.
+    *   Handle API responses (success, errors, HTTP codes).
+    *   Display the translation or error messages clearly.
 
-### 4.3 Phase 3 : Build et Distribution
+### 4.3 Phase 3: Build and Distribution
 
-1.  **Script de compilation :** Préparer un script (ou une cible Makefile) pour compiler l'exécutable pour différentes plateformes (Linux, macOS, Windows).
-2.  **GitHub Actions pour les Releases :**
-    * Mettre en place un workflow GitHub Actions pour compiler l'outil pour différentes architectures et systèmes d'exploitation.
-    * Ce workflow devra créer des *releases* GitHub avec les binaires attachés lors d'un push de tag.
+1.  **Compilation Script:** Prepare a script (or Makefile target) to compile the executable for different platforms (Linux, macOS, Windows).
+2.  **GitHub Actions for Releases:**
+    *   Set up a GitHub Actions workflow to compile the tool for different architectures and operating systems.
+    *   This workflow should create GitHub *releases* with attached binaries upon a tag push.
 
-### 4.4 Phase 4 : Documentation et tests
+### 4.4 Phase 4: Documentation and Tests
 
-1.  **Tests unitaires et d'intégration :** Écrire des tests pour les composants clés (parsing de configuration, appels API, etc.).
-2.  **Documentation :**
-    * Créer un fichier `README.md` détaillé.
-    * Créer une documentation plus approfondie dans le répertoire `doc/`.
-
+1.  **Unit and Integration Tests:** Write tests for key components (configuration parsing, API calls, etc.).
+2.  **Documentation:**
+    *   Create a detailed `README.md` file.
+    *   Create more in-depth documentation in the `doc/` directory.
