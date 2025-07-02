@@ -33,6 +33,15 @@ go build -o deepl ./cmd/deepl
 # mv deepl /usr/local/bin/deepl
 ```
 
+## 💡 Philosophy
+
+DeepL CLI embraces the core tenets of the Unix philosophy:
+
+*   **Do one thing and do it well:** Its primary function is text translation via the DeepL API.
+*   **Work together:** Designed to be easily integrated with other command-line tools through pipes (e.g., `cat file.txt | deepl | less`).
+*   **Text is the universal interface:** Input and output are plain text, making it highly interoperable.
+*   **Build a prototype as soon as you can:** Focus on core functionality first, then iterate.
+
 ## ⚙️ Configuration
 
 Before using deepl-cli, you need to configure your DeepL API key and optionally your default languages.
