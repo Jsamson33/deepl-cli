@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automatic Update System Proposal</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .section-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .section-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .section-card h3 {
+            margin-top: 0;
+            color: #2980b9;
+        }
+        /* Fork me on GitHub ribbon */
+        .github-ribbon {
+            position: absolute;
+            top: 0;
+            right: 0;
+            border: 0;
+            z-index: 9999;
+        }
+        .github-ribbon img {
+            width: 149px;
+            height: 149px;
+        }
+    </style>
+</head>
+<body>
+    <a href="https://github.com/Jsamson33/deepl-cli" class="github-ribbon">
+        <img decoding="async" loading="lazy" width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png?resize=149%2C149" class="attachment-full size-full wp-post-image" alt="Fork me on GitHub">
+    </a>
+
+    <div class="container">
+        <h1>Automatic Update System Proposal</h1>
+
+        <h2>1. Introduction</h2>
+        <p>This document proposes an approach to implement an automatic update system for the <code>deepl-cli</code> executable, similar to what is used by tools like OhMyZsh. The goal is to allow the application to check for and install new available versions on startup, thereby improving user experience and maintenance.</p>
+
+        <h2>2. Operating Principles</h2>
+        <p>The automatic update process will follow these general steps:</p>
+        <ol>
+            <li><strong>Current Version Check:</strong> On launch, the application will determine its own version (which will be embedded during compilation).</li>
+            <li><strong>Remote Source Query:</strong> The application will contact a remote source (e.g., <a href="https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository">GitHub Releases</a>) to check if a newer version is available.</li>
+            <li><strong>New Version Download:</strong> If a new version is detected, the executable corresponding to the user's OS and architecture will be downloaded to a temporary location.</li>
+            <li><strong>Executable Replacement:</strong> The application will attempt to replace itself with the newly downloaded executable. This is the most delicate step, as a running process cannot directly overwrite its own file. This typically involves:
+                <ul>
+                    <li>Renaming the old executable (e.g., <code>deepl.old</code>).</li>
+                    <li>Moving the new executable to the original path (<code>deepl</code>).</li>
+                    <li>Handling potential errors (permissions, corrupted download, etc.).</li>
+                    <li>Cleaning up the old executable on a subsequent successful startup.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h2>3. Technical Implementation (Go)</h2>
+        <p>To facilitate the implementation of this system in Go, it is highly recommended to use an existing library that handles the complexities of replacing a running executable and managing versions. The <code>github.com/rhysd/go-github-selfupdate</code> library is an excellent candidate for projects hosted on GitHub.</p>
+
+        <h3>Implementation Steps:</h3>
+        <ol>
+            <li><strong>Library Integration:</strong>
+                <ul>
+                    <li>Add <code>github.com/rhysd/go-github-selfupdate</code> to the project dependencies (<code>go get github.com/rhysd/go-github-selfupdate</code>).</li>
+                </ul>
+            </li>
+            <li><strong>Version Definition:</strong>
+                <ul>
+                    <li>The application version must be defined in a way that can be read by the code (e.g., via a <code>const</code> variable or a variable injected at compile time via <code>ldflags</code>).</li>
+                    <li>Example: <code>go build -ldflags "-X main.version=1.0.0"</code></li>
+                </ul>
+            </li>
+            <li><strong>Check and Update Logic:</strong>
+                <ul>
+                    <li>At the beginning of the <code>main</code> function (or in a dedicated function called by <code>main</code>), implement the check logic.</li>
+                    <li>Use the <code>selfupdate.UpdateSelf</code> or <code>selfupdate.UpdateSelfFromSource</code> function from the library.</li>
+                    <li>This function will handle version comparison, downloading, and replacement.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <pre><code class="language-go">package main
+
+import (
+	"fmt"
+	"os"
+	"time"
+
+	"github.com/rhysd/go-github-selfupdate/selfupdate"
+)
+
+var version = "0.0.1" // This value will be replaced by ldflags during compilation
+
+func doSelfUpdate() {
+	latest, err := selfupdate.UpdateSelf(version, "Jsamson33/deepl-cli")
+	if err != nil {
+		fmt.Println("Self-update failed:", err)
+		return
+	}
+	if latest.Version.String() != version {
+		fmt.Println("Successfully updated to version", latest.Version)
+		fmt.Println("Release Note:\n", latest.ReleaseNotes)
+	} else {
+		fmt.Println("Current version is the latest")
+	}
+}
+
+func main() {
+	// Optional: Check for updates only after a certain delay or with a specific flag
+	// if time.Now().Sub(lastUpdateTime) > 24 * time.Hour {
+	//     doSelfUpdate()
+	// }
+
+	doSelfUpdate()
+
+	// Rest of the application logic
+	// ...
+}
+</code></pre>
+
+        <p>4.  <strong>Error Handling and User Experience:</strong></p>
+        <ul>
+            <li>Provide clear messages to the user regarding the update status (new version available, successful update, failure).</li>
+            <li>Handle cases where the user does not have the necessary permissions for the update.</li>
+            <li>Consider adding a CLI flag (<code>--no-self-update</code>) to disable automatic checking.</li>
+        </ul>
+
+        <h2>4. Important Considerations</h2>
+        <ul>
+            <li><strong>Permissions:</strong> The update system requires write permissions to the directory where the executable is installed. This can be an issue on some systems (e.g., <code>/usr/bin</code>). One solution is to ask the user to install the executable in a directory where they have write access (e.g., <code>/usr/local/bin</code> or a personal directory).</li>
+            <li><strong>Binary Signatures:</strong> For increased security, it is highly recommended to sign release binaries and verify these signatures during the update. The <code>go-github-selfupdate</code> library supports GPG signature verification.</li>
+            <li><strong>Check Frequency:</strong> Avoid checking for updates on every launch to prevent overloading the GitHub API or slowing down application startup. A daily or weekly check is usually sufficient.</li>
+            <li><strong>Rollback:</strong> In case of update failure, the old executable is usually retained (renamed). This allows for manual rollback if necessary.</li>
+            <li><strong>Compatibility:</strong> Ensure that new versions are compatible with older configurations and user data.</li>
+        </ul>
+
+        <h2>5. Next Steps</h2>
+        <ol>
+            <li>Discuss the feasibility of implementing this feature.</li>
+            <li>If approved, integrate the <code>go-github-selfupdate</code> library.</li>
+            <li>Set up the release process on GitHub Actions to generate binaries with versions and potentially signatures.</li>
+            <li>Implement the update logic in the code.</li>
+            <li>Rigorously test the update system on different platforms.</li>
+        </ol>
+    </div>
+</body>
+</html>
