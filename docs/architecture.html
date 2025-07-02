@@ -74,16 +74,7 @@
         <h2>2. General Architecture</h2>
         <p>The project's architecture is designed to be modular and easy to maintain, separating concerns between command-line management, configuration, and interaction with the external API.</p>
 
-        <pre><code class="language-mermaid">graph TD
-    A[User] -->|Executes deepl command| B(CLI - cmd/deepl/main.go)
-    B -->|Parses arguments (cobra)| C{Root Command - cmd/deepl/cmd/root.go}
-    C -->|Loads configuration| D[Configuration - internal/config/config.go]
-    C -->|Prioritizes arguments over config|
-    C -->|Calls DeepL API| E(DeepL API)
-    E -->|Returns translation| C
-    C -->|Displays result| A
-    D -->|.deepl.toml (config file)|
-</code></pre>
+        <img src="architecture.png" alt="DeepL CLI Architecture Diagram" style="max-width:100%; height:auto;">
 
         <h2>3. Key Components</h2>
 

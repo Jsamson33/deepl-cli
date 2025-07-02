@@ -11,6 +11,10 @@
 *   Easy configuration of your API key and default languages via a `~/.deepl/.deepl.toml` file.
 *   Support for source and target languages directly from the command line.
 
+### Architecture Overview
+
+![DeepL CLI Architecture](docs/architecture.png)
+
 ## 🚀 Installation
 
 ### Prerequisites
