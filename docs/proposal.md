@@ -30,3 +30,13 @@ This document outlines potential feature enhancements for the `deepl-cli` projec
 ## 6. Auto-Update Mechanism
 
 *   **Description:** Implement the proposed auto-update system (as detailed in `docs/auto-update-proposal.html`) to allow the CLI tool to update itself to the latest version automatically or on user command. This significantly improves maintainability and ensures users always have the latest features and bug fixes.
+
+## 7. Homebrew Package
+
+*   **Description:** Create and maintain a Homebrew formula for `deepl-cli`, allowing macOS and Linux users to easily install and update the tool using `brew install deepl-cli`. This simplifies distribution and improves the user experience for a large segment of CLI users.
+*   **Example Usage:** `brew install deepl-cli`
+
+## 8. APT Package (Debian/Ubuntu)
+
+*   **Description:** Create and maintain an APT package for `deepl-cli`, enabling users on Debian-based Linux distributions (e.g., Ubuntu, Debian) to install and update the tool using `apt install deepl-cli`. This provides a familiar and secure installation method for a significant portion of Linux users.
+*   **Example Usage:** `sudo apt install deepl-cli`
