@@ -1,18 +1,14 @@
 package main
 
 import (
+	"deepl-cli/cmd/deepl/cmd"
 	"fmt"
-	"log"
-
-	"deepl-cli/internal/config"
+	"os"
 )
 
 func main() {
-	cfg, err := config.LoadConfig()
-	if err != nil {
-		log.Fatalf("Error loading configuration: %v", err)
+	if err := cmd.RootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
-
-	fmt.Printf("Source Lang: %s\n", cfg.SourceLang)
-	fmt.Printf("Target Lang: %s\n", cfg.TargetLang)
 }

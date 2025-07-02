@@ -14,33 +14,29 @@ type Config struct {
 	TargetLang string `toml:"target_lang"`
 }
 
-func LoadConfig() (*Config, error) {
-	home, err := os.UserHomeDir()
+func Load() (*Config, error) {
+	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return nil, err
 	}
 
-	configPath := filepath.Join(home, ".deepl", ".deepl.toml")
-	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		return nil, errors.New("config file not found: " + configPath)
+	configFilePath := filepath.Join(homeDir, ".deepl", ".deepl.toml")
+	if _, err := os.Stat(configFilePath); os.IsNotExist(err) {
+		return nil, errors.New("config file not found: " + configFilePath)
 	}
 
-	var config Config
-	if _, err := toml.DecodeFile(configPath, &config); err != nil {
+	var cfg Config
+	if _, err := toml.DecodeFile(configFilePath, &cfg); err != nil {
 		return nil, err
 	}
 
-	if config.APIKey == "" {
+	if cfg.APIKey == "" {
 		return nil, errors.New("api_key not found in config file")
 	}
 
-	if config.SourceLang == "" {
-		config.SourceLang = "fr"
+	if cfg.TargetLang == "" {
+		return nil, errors.New("target_lang not found in config file")
 	}
 
-	if config.TargetLang == "" {
-		config.TargetLang = "en"
-	}
-
-	return &config, nil
+	return &cfg, nil
 }
