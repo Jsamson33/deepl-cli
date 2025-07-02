@@ -1,39 +1,39 @@
-# Proposition de Système de Mise à Jour Automatique
+# Automatic Update System Proposal
 
 ## 1. Introduction
 
-Ce document propose une approche pour implémenter un système de mise à jour automatique pour l'exécutable `deepl-cli`, similaire à celui utilisé par des outils comme OhMyZsh. L'objectif est de permettre à l'application de vérifier et d'installer les nouvelles versions disponibles au démarrage, améliorant ainsi l'expérience utilisateur et la maintenance.
+This document proposes an approach to implement an automatic update system for the `deepl-cli` executable, similar to what is used by tools like OhMyZsh. The goal is to allow the application to check for and install new available versions on startup, thereby improving user experience and maintenance.
 
-## 2. Principes de Fonctionnement
+## 2. Operating Principles
 
-Le processus de mise à jour automatique suivra les étapes générales suivantes :
+The automatic update process will follow these general steps:
 
-1.  **Vérification de la Version Actuelle :** Au lancement, l'application déterminera sa propre version (qui sera intégrée lors de la compilation).
-2.  **Interrogation d'une Source Distante :** L'application contactera une source distante (par exemple, les [GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)) pour vérifier si une version plus récente est disponible.
-3.  **Téléchargement de la Nouvelle Version :** Si une nouvelle version est détectée, l'exécutable correspondant à l'OS et à l'architecture de l'utilisateur sera téléchargé dans un emplacement temporaire.
-4.  **Remplacement de l'Exécutable :** L'application tentera de se remplacer elle-même par le nouvel exécutable téléchargé. C'est l'étape la plus délicate, car un processus en cours d'exécution ne peut pas directement écraser son propre fichier. Cela implique généralement :
-    *   Renommer l'ancien exécutable (par exemple, `deepl.old`).
-    *   Déplacer le nouvel exécutable vers le chemin d'origine (`deepl`).
-    *   Gérer les erreurs potentielles (permissions, téléchargement corrompu, etc.).
-    *   Nettoyer l'ancien exécutable lors d'un démarrage ultérieur réussi.
+1.  **Current Version Check:** On launch, the application will determine its own version (which will be embedded during compilation).
+2.  **Remote Source Query:** The application will contact a remote source (e.g., [GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)) to check if a newer version is available.
+3.  **New Version Download:** If a new version is detected, the executable corresponding to the user's OS and architecture will be downloaded to a temporary location.
+4.  **Executable Replacement:** The application will attempt to replace itself with the newly downloaded executable. This is the most delicate step, as a running process cannot directly overwrite its own file. This typically involves:
+    *   Renaming the old executable (e.g., `deepl.old`).
+    *   Moving the new executable to the original path (`deepl`).
+    *   Handling potential errors (permissions, corrupted download, etc.).
+    *   Cleaning up the old executable on a subsequent successful startup.
 
-## 3. Implémentation Technique (Go)
+## 3. Technical Implementation (Go)
 
-Pour faciliter l'implémentation de ce système en Go, il est fortement recommandé d'utiliser une bibliothèque existante qui gère les complexités liées au remplacement d'un exécutable en cours d'exécution et à la gestion des versions. La bibliothèque `github.com/rhysd/go-github-selfupdate` est un excellent candidat pour les projets hébergés sur GitHub.
+To facilitate the implementation of this system in Go, it is highly recommended to use an existing library that handles the complexities of replacing a running executable and managing versions. The `github.com/rhysd/go-github-selfupdate` library is an excellent candidate for projects hosted on GitHub.
 
-### Étapes d'Implémentation :
+### Implementation Steps:
 
-1.  **Intégration de la Bibliothèque :**
-    *   Ajouter `github.com/rhysd/go-github-selfupdate` aux dépendances du projet (`go get github.com/rhysd/go-github-selfupdate`).
+1.  **Library Integration:**
+    *   Add `github.com/rhysd/go-github-selfupdate` to the project dependencies (`go get github.com/rhysd/go-github-selfupdate`).
 
-2.  **Définition de la Version :**
-    *   La version de l'application doit être définie de manière à pouvoir être lue par le code (par exemple, via une variable `const` ou une variable injectée au moment de la compilation via les `ldflags`).
-    *   Exemple : `go build -ldflags "-X main.version=1.0.0"`
+2.  **Version Definition:**
+    *   The application version must be defined in a way that can be read by the code (e.g., via a `const` variable or a variable injected at compile time via `ldflags`).
+    *   Example: `go build -ldflags "-X main.version=1.0.0"`
 
-3.  **Logique de Vérification et de Mise à Jour :**
-    *   Au début de la fonction `main` (ou dans une fonction dédiée appelée par `main`), implémenter la logique de vérification.
-    *   Utiliser la fonction `selfupdate.UpdateSelf` ou `selfupdate.UpdateSelfFromSource` de la bibliothèque.
-    *   Cette fonction prendra en charge la comparaison des versions, le téléchargement et le remplacement.
+3.  **Check and Update Logic:**
+    *   At the beginning of the `main` function (or in a dedicated function called by `main`), implement the check logic.
+    *   Use the `selfupdate.UpdateSelf` or `selfupdate.UpdateSelfFromSource` function from the library.
+    *   This function will handle version comparison, downloading, and replacement.
 
     ```go
     package main
@@ -46,7 +46,7 @@ Pour faciliter l'implémentation de ce système en Go, il est fortement recomman
     	"github.com/rhysd/go-github-selfupdate/selfupdate"
     )
 
-    var version = "0.0.1" // Cette valeur sera remplacée par ldflags lors de la compilation
+    var version = "0.0.1" // This value will be replaced by ldflags during compilation
 
     func doSelfUpdate() {
     	latest, err := selfupdate.UpdateSelf(version, "Jsamson33/deepl-cli")
@@ -63,35 +63,35 @@ Pour faciliter l'implémentation de ce système en Go, il est fortement recomman
     }
 
     func main() {
-    	// Optionnel: Vérifier la mise à jour seulement après un certain délai ou avec un flag spécifique
+    	// Optional: Check for updates only after a certain delay or with a specific flag
     	// if time.Now().Sub(lastUpdateTime) > 24 * time.Hour {
     	//     doSelfUpdate()
     	// }
 
     	doSelfUpdate()
 
-    	// Reste de la logique de l'application
+    	// Rest of the application logic
     	// ...
     }
     ```
 
-4.  **Gestion des Erreurs et de l'Expérience Utilisateur :**
-    *   Fournir des messages clairs à l'utilisateur concernant l'état de la mise à jour (nouvelle version disponible, mise à jour réussie, échec).
-    *   Gérer les cas où l'utilisateur n'a pas les permissions nécessaires pour la mise à jour.
-    *   Considérer l'ajout d'un flag CLI (`--no-self-update`) pour désactiver la vérification automatique.
+4.  **Error Handling and User Experience:**
+    *   Provide clear messages to the user regarding the update status (new version available, successful update, failure).
+    *   Handle cases where the user does not have the necessary permissions for the update.
+    *   Consider adding a CLI flag (`--no-self-update`) to disable automatic checking.
 
-## 4. Considérations Importantes
+## 4. Important Considerations
 
-*   **Permissions :** Le système de mise à jour nécessite des permissions d'écriture sur le répertoire où l'exécutable est installé. Cela peut être un problème sur certains systèmes (ex: `/usr/bin`). Une solution est de demander à l'utilisateur d'installer l'exécutable dans un répertoire où il a les droits (ex: `/usr/local/bin` ou un répertoire personnel).
-*   **Signatures Binaires :** Pour une sécurité accrue, il est fortement recommandé de signer les binaires des releases et de vérifier ces signatures lors de la mise à jour. La bibliothèque `go-github-selfupdate` supporte la vérification des signatures GPG.
-*   **Fréquence de Vérification :** Éviter de vérifier les mises à jour à chaque lancement pour ne pas surcharger GitHub API ou ralentir le démarrage de l'application. Une vérification quotidienne ou hebdomadaire est généralement suffisante.
-*   **Rollback :** En cas d'échec de la mise à jour, l'ancien exécutable est généralement conservé (renommé). Cela permet un rollback manuel si nécessaire.
-*   **Compatibilité :** S'assurer que les nouvelles versions sont compatibles avec les anciennes configurations et données utilisateur.
+*   **Permissions:** The update system requires write permissions to the directory where the executable is installed. This can be an issue on some systems (e.g., `/usr/bin`). One solution is to ask the user to install the executable in a directory where they have write access (e.g., `/usr/local/bin` or a personal directory).
+*   **Binary Signatures:** For increased security, it is highly recommended to sign release binaries and verify these signatures during the update. The `go-github-selfupdate` library supports GPG signature verification.
+*   **Check Frequency:** Avoid checking for updates on every launch to prevent overloading the GitHub API or slowing down application startup. A daily or weekly check is usually sufficient.
+*   **Rollback:** In case of update failure, the old executable is usually retained (renamed). This allows for manual rollback if necessary.
+*   **Compatibility:** Ensure that new versions are compatible with older configurations and user data.
 
-## 5. Étapes Suivantes
+## 5. Next Steps
 
-1.  Discuter de l'opportunité d'implémenter cette fonctionnalité.
-2.  Si approuvé, intégrer la bibliothèque `go-github-selfupdate`.
-3.  Mettre en place le processus de release sur GitHub Actions pour générer des binaires avec des versions et potentiellement des signatures.
-4.  Implémenter la logique de mise à jour dans le code.
-5.  Tester rigoureusement le système de mise à jour sur différentes plateformes.
+1.  Discuss the feasibility of implementing this feature.
+2.  If approved, integrate the `go-github-selfupdate` library.
+3.  Set up the release process on GitHub Actions to generate binaries with versions and potentially signatures.
+4.  Implement the update logic in the code.
+5.  Rigorously test the update system on different platforms.
