@@ -1,0 +1,56 @@
+name: Release
+
+on: 
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22
+
+      - name: Get version
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Build and archive
+        run: |
+          GOOS=linux GOARCH=amd64 go build -o deepl-linux-amd64 ./cmd/deepl
+          tar -czf deepl-linux-amd64.tar.gz deepl-linux-amd64
+
+          GOOS=linux GOARCH=arm64 go build -o deepl-linux-arm64 ./cmd/deepl
+          tar -czf deepl-linux-arm64.tar.gz deepl-linux-arm64
+
+          GOOS=darwin GOARCH=amd64 go build -o deepl-darwin-amd64 ./cmd/deepl
+          tar -czf deepl-darwin-amd64.tar.gz deepl-darwin-amd64
+
+          GOOS=darwin GOARCH=arm64 go build -o deepl-darwin-arm64 ./cmd/deepl
+          tar -czf deepl-darwin-arm64.tar.gz deepl-darwin-arm64
+
+          GOOS=windows GOARCH=amd64 go build -o deepl-windows-amd64.exe ./cmd/deepl
+          zip deepl-windows-amd64.zip deepl-windows-amd64.exe
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          name: Release ${{ steps.get_version.outputs.VERSION }}
+          draft: false
+          prerelease: false
+          files: |
+            deepl-linux-amd64.tar.gz
+            deepl-linux-arm64.tar.gz
+            deepl-darwin-amd64.tar.gz
+            deepl-darwin-arm64.tar.gz
+            deepl-windows-amd64.zip
