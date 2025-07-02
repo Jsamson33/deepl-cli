@@ -15,18 +15,70 @@ import (
 var (
 	srcLang string
 	tgtLang string
-	apiURL = "https://api-free.deepl.com/v2/translate"
+	apiURL = "https://api-free.deepl.com/v2/"
+	showLanguages bool
 )
 
 var RootCmd = &cobra.Command{
 	Use:   "deepl [text to translate]",
 	Short: "A simple CLI for translating text using the DeepL API",
-	Args:  cobra.ExactArgs(1),
+	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg, err := config.Load()
 		if err != nil {
 			fmt.Printf("Error loading configuration: %v\n", err)
 			os.Exit(1)
+		}
+
+		if showLanguages {
+			type Language struct {
+				Language string `json:"language"`
+				Name     string `json:"name"`
+			}
+
+			req, err := http.NewRequest("GET", apiURL + "languages", nil)
+			if err != nil {
+				fmt.Printf("Error creating request: %v\n", err)
+				os.Exit(1)
+			}
+			req.Header.Set("Authorization", "DeepL-Auth-Key "+cfg.APIKey)
+
+			client := &http.Client{}
+			resp, err := client.Do(req)
+			if err != nil {
+				fmt.Printf("Error fetching languages: %v\n", err)
+				os.Exit(1)
+			}
+			defer resp.Body.Close()
+
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				fmt.Printf("Error reading response body: %v\n", err)
+				os.Exit(1)
+			}
+
+			if resp.StatusCode != http.StatusOK {
+				fmt.Printf("DeepL API error: %s (Status: %d)\n", string(body), resp.StatusCode)
+				os.Exit(1)
+			}
+
+			var languages []Language
+			if err := json.Unmarshal(body, &languages); err != nil {
+				fmt.Printf("Error unmarshalling languages: %v\n", err)
+				os.Exit(1)
+			}
+
+			fmt.Println("Supported DeepL Languages:")
+			fmt.Println("--------------------------")
+			for _, lang := range languages {
+				fmt.Printf("%s: %s\n", lang.Language, lang.Name)
+			}
+			return
+		}
+
+		if len(args) == 0 {
+			cmd.Help()
+			return
 		}
 
 		if srcLang == "" {
@@ -56,50 +108,10 @@ var RootCmd = &cobra.Command{
 func init() {
 	RootCmd.Flags().StringVarP(&srcLang, "source", "s", "", "Source language")
 	RootCmd.Flags().StringVarP(&tgtLang, "target", "t", "", "Target language")
-
-	RootCmd.AddCommand(languagesCmd)
+	RootCmd.Flags().BoolVarP(&showLanguages, "languages", "l", false, "List all supported DeepL languages")
 }
 
-var languagesCmd = &cobra.Command{
-	Use:   "languages",
-	Short: "List all supported DeepL languages",
-	Run: func(cmd *cobra.Command, args []string) {
-		type Language struct {
-			Language string `json:"language"`
-			Name     string `json:"name"`
-		}
 
-		resp, err := http.Get(apiURL + "/v2/languages")
-		if err != nil {
-			fmt.Printf("Error fetching languages: %v\n", err)
-			os.Exit(1)
-		}
-		defer resp.Body.Close()
-
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			fmt.Printf("Error reading response body: %v\n", err)
-			os.Exit(1)
-		}
-
-		if resp.StatusCode != http.StatusOK {
-			fmt.Printf("DeepL API error: %s (Status: %d)\n", string(body), resp.StatusCode)
-			os.Exit(1)
-		}
-
-		var languages []Language
-		if err := json.Unmarshal(body, &languages); err != nil {
-			fmt.Printf("Error unmarshalling languages: %v\n", err)
-			os.Exit(1)
-		}
-
-		fmt.Println("Supported DeepL Languages:")
-		fmt.Println("--------------------------")
-		for _, lang := range languages {
-			fmt.Printf("%s: %s\n", lang.Language, lang.Name)
-		}
-	},
-}
 
 func translateText(text, srcLangParam, tgtLangParam, apiKey string) (string, error) {
 
