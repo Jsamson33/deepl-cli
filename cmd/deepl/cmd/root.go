@@ -15,6 +15,7 @@ import (
 var (
 	srcLang string
 	tgtLang string
+	apiURL = "https://api-free.deepl.com/v2/translate"
 )
 
 var RootCmd = &cobra.Command{
@@ -58,7 +59,6 @@ func init() {
 }
 
 func translateText(text, srcLangParam, tgtLangParam, apiKey string) (string, error) {
-	apiURL := "https://api-free.deepl.com/v2/translate"
 
 	type DeepLRequest struct {
 		Text       []string `json:"text"`

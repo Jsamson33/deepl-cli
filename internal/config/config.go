@@ -38,5 +38,9 @@ func Load() (*Config, error) {
 		return nil, errors.New("target language not found in config file")
 	}
 
+	if cfg.SourceLang == "" {
+		cfg.SourceLang = "en" // Default source language if not specified
+	}
+
 	return &cfg, nil
 }
