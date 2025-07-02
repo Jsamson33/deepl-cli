@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuring Your DeepL API Key</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .section-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .section-card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .section-card h3 {
+            margin-top: 0;
+            color: #2980b9;
+        }
+        /* Fork me on GitHub ribbon */
+        .github-ribbon {
+            position: absolute;
+            top: 0;
+            right: 0;
+            border: 0;
+            z-index: 9999;
+        }
+        .github-ribbon img {
+            width: 149px;
+            height: 149px;
+        }
+    </style>
+</head>
+<body>
+    <a href="https://github.com/Jsamson33/deepl-cli" class="github-ribbon">
+        <img decoding="async" loading="lazy" width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_darkblue_121621.png?resize=149%2C149" class="attachment-full size-full wp-post-image" alt="Fork me on GitHub">
+    </a>
+
+    <div class="container">
+        <h1>Configuring Your DeepL API Key</h1>
+        <p>To use the <code>deepl-cli</code> tool, you need a valid DeepL API key. This key allows the tool to authenticate with the DeepL API and perform translations.</p>
+
+        <h2>Obtaining Your DeepL API Key</h2>
+        <p>If you don't already have one, you can obtain a DeepL API key by signing up for the <a href="https://www.deepl.com/pro/developer">DeepL API Free plan</a> or a paid plan on the official DeepL website.</p>
+
+        <h2>Configuration File Location</h2>
+        <p>The <code>deepl-cli</code> tool reads its configuration from a file named <code>.deepl.toml</code> located in a <code>.deepl</code> directory within your user's home directory. The exact path varies by operating system:</p>
+        <ul>
+            <li><strong>Linux/macOS:</strong> <code>~/.deepl/.deepl.toml</code> (e.g., <code>/home/youruser/.deepl/.deepl.toml</code>)</li>
+            <li><strong>Windows:</strong> <code>%USERPROFILE%\.deepl\.deepl.toml</code> (e.g., <code>C:\Users\youruser\.deepl\.deepl.toml</code>)</li>
+        </ul>
+
+        <h2>Creating the Configuration File</h2>
+        <p>If the <code>.deepl</code> directory or the <code>.deepl.toml</code> file does not exist, you need to create them manually.</p>
+
+        <p>1.  <strong>Create the <code>.deepl</code> directory:</strong></p>
+        <pre><code class="language-bash">mkdir -p ~/.deepl
+</code></pre>
+
+        <p>2.  <strong>Create the <code>.deepl.toml</code> file:</strong></p>
+        <p>Open a text editor and create a file named <code>.deepl.toml</code> inside the <code>~/.deepl/</code> directory. Add the following content, replacing <code>YOUR_DEEPL_API_KEY</code> with your actual DeepL API key:</p>
+
+        <pre><code class="language-toml">api_key = "YOUR_DEEPL_API_KEY"
+target_lang = "en" # Default target language (e.g., "en" for English, "fr" for French)
+# source_lang = "fr" # Optional: default source language (can be auto-detected)
+</code></pre>
+
+        <p><strong>Important:</strong> The <code>api_key</code> and <code>target_lang</code> fields are mandatory. If <code>source_lang</code> is not provided, the tool will attempt to auto-detect the source language.</p>
+
+        <h2>Example Configuration</h2>
+        <p>Here's an example of a complete <code>.deepl.toml</code> file:</p>
+
+        <pre><code class="language-toml">api_key = "aBcDeFgHiJkLmNoPqRsTuVwXyZ1234567890"
+target_lang = "es" # Translate to Spanish by default
+source_lang = "en" # Optional: if not set, source language will be auto-detected
+</code></pre>
+
+        <p>Once the configuration file is set up, <code>deepl-cli</code> will automatically use your API key and default language settings for translations.</p>
+    </div>
+</body>
+</html>
